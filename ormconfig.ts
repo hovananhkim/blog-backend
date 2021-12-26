@@ -5,6 +5,7 @@ const ormconfig = {
   type: 'postgres',
   entities: ['./src/entities/*.entity.ts'],
   migrations: ['./src/migrations/*.ts'],
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   cli: {
     migrationsDir: 'src/migrations',
   },
