@@ -1,2 +1,1 @@
-web: npm run typeorm:run
-web: npm run start:prod
+web: yarn typeorm:run && yarn start:prod
