@@ -29,8 +29,8 @@ export class BlogsService {
     }
   }
 
-  async getAll(): Promise<Blog[]> {
-    return this.blogsRepository.find();
+  async getAll() {
+    return this.blogsRepository.find({relations: ['user']});
   }
 
   async getMyBlog(user: User): Promise<Blog[]> {
