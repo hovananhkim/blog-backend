@@ -35,23 +35,26 @@ export class BlogsService {
       delete blog.user;
       const item = {
         ...blog,
-        createdBy
-      }
+        createdBy,
+      };
       result.push(item);
     }
     return result;
   }
 
   async getMyBlog(user: User) {
-    const blogs = await this.blogsRepository.find({where: {user}, relations: ['user']});
+    const blogs = await this.blogsRepository.find({
+      where: { user },
+      relations: ['user'],
+    });
     const result = [];
     for (const blog of blogs) {
       const createdBy = blog.user.name;
       delete blog.user;
       const item = {
         ...blog,
-        createdBy
-      }
+        createdBy,
+      };
       result.push(item);
     }
     return result;
@@ -69,9 +72,12 @@ export class BlogsService {
     return this.blogsRepository.save(blog);
   }
 
-  async delete(id: string): Promise<void> {
-    const blog = await this.findById(id);
-    await this.blogsRepository.delete(blog);
+  async delete(id: string, user): Promise<void> {
+    const blog = await this.blogsRepository.findOne({ id, user });
+    if (!blog) {
+      throw new NotFoundException('BLOG_NOT_FOUND')
+    }
+    await this.blogsRepository.delete({id});
   }
 
   private async findById(id: string): Promise<Blog> {

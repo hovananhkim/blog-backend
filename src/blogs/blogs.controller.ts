@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -24,6 +25,7 @@ export class BlogsController {
   constructor(private blogsService: BlogsService) {}
 
   @Post()
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   create(@GetUser() user: User, @Body() blogCreate: BlogCreateRequestDto) {
     return this.blogsService.create(user, blogCreate);
@@ -53,7 +55,7 @@ export class BlogsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogsService.delete(id);
+  delete(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: User) {
+    return this.blogsService.delete(id, user);
   }
 }
