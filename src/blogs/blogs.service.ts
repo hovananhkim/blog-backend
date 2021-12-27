@@ -24,17 +24,37 @@ export class BlogsService {
       const result = await this.blogsRepository.save(blog);
       delete result.user;
       return result;
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 
   async getAll() {
-    return this.blogsRepository.find({relations: ['user']});
+    const blogs = await this.blogsRepository.find({ relations: ['user'] });
+    const result = [];
+    for (const blog of blogs) {
+      const createdBy = blog.user.name;
+      delete blog.user;
+      const item = {
+        ...blog,
+        createdBy
+      }
+      result.push(item);
+    }
+    return result;
   }
 
-  async getMyBlog(user: User): Promise<Blog[]> {
-    return this.blogsRepository.find({ user });
+  async getMyBlog(user: User) {
+    const blogs = await this.blogsRepository.find({where: {user}, relations: ['user']});
+    const result = [];
+    for (const blog of blogs) {
+      const createdBy = blog.user.name;
+      delete blog.user;
+      const item = {
+        ...blog,
+        createdBy
+      }
+      result.push(item);
+    }
+    return result;
   }
 
   async getById(id: string): Promise<Blog> {
