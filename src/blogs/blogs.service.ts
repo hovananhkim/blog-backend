@@ -28,7 +28,12 @@ export class BlogsService {
   }
 
   async getAll() {
-    const blogs = await this.blogsRepository.find({ relations: ['user'] });
+    const blogs = await this.blogsRepository
+      .createQueryBuilder('blog')
+      .leftJoinAndSelect('blog.user', 'user')
+      .orderBy('updated_at', 'DESC')
+      .getMany();
+
     const result = [];
     for (const blog of blogs) {
       const createdBy = blog.user.name;
@@ -43,10 +48,13 @@ export class BlogsService {
   }
 
   async getMyBlog(user: User) {
-    const blogs = await this.blogsRepository.find({
-      where: { user },
-      relations: ['user'],
-    });
+    const userId = user.id;
+    const blogs = await this.blogsRepository
+      .createQueryBuilder('blog')
+      .leftJoinAndSelect('blog.user', 'user')
+      .where('blog.user_id = :userId', {userId})
+      .orderBy('updated_at', 'DESC')
+      .getMany();
     const result = [];
     for (const blog of blogs) {
       const createdBy = blog.user.name;
@@ -75,9 +83,9 @@ export class BlogsService {
   async delete(id: string, user): Promise<void> {
     const blog = await this.blogsRepository.findOne({ id, user });
     if (!blog) {
-      throw new NotFoundException('BLOG_NOT_FOUND')
+      throw new NotFoundException('BLOG_NOT_FOUND');
     }
-    await this.blogsRepository.delete({id});
+    await this.blogsRepository.delete({ id });
   }
 
   private async findById(id: string): Promise<Blog> {
