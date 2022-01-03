@@ -74,9 +74,10 @@ export class BlogsService {
 
   async update(id: string, blogUpdate: BlogCreateRequestDto): Promise<Blog> {
     const blog = await this.findById(id);
-    const { title, description } = blogUpdate;
+    const { title, description, image } = blogUpdate;
     blog.title = title;
     blog.description = description;
+    blog.image = image;
     return this.blogsRepository.save(blog);
   }
 
